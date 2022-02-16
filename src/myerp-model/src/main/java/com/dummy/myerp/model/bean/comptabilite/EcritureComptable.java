@@ -24,7 +24,11 @@ public class EcritureComptable {
     /** Journal comptable */
     @NotNull private JournalComptable journal;
     /** The Reference. */
-    @Pattern(regexp = "\\d{1,5}-\\d{4}/\\d{5}")
+    //@Pattern(regexp = "\\d{1,5}-\\d{4}/\\d{5}")
+    /*
+        @FIX #04 : Le pattern doit prendre en compte les caractères A-Z pour le code journal.
+     */
+    @Pattern(regexp = "[A-Z]{2}-[0-9]{4}/[0-9]{5}")
     private String reference;
     /** The Date. */
     @NotNull private Date date;
