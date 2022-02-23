@@ -2,9 +2,7 @@ package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 import com.dummy.myerp.business.impl.TransactionManager;
 import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
@@ -210,8 +208,24 @@ public void init () {
 }
 
 @Test
-    public void checkEcritureComptable () {
-
+    public void checkEcritureComptable () throws Exception {
+    EcritureComptable vEcritureComptable;
+    vEcritureComptable = new EcritureComptable();
+    //On remplie les éléments requis pour le test unitaire
+    vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+    //new date = date du jour par défault
+    vEcritureComptable.setDate(new Date());
+    vEcritureComptable.setLibelle("Libelle");
+    vEcritureComptable.setReference("AC-2022/00001");
+    vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+            null, new BigDecimal(123),
+            null));
+    vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
+            null, null,
+            new BigDecimal(123)));
+//On mock comme pour checkEcritureComptableContext
+    Mockito.when(comptabiliteDao.getEcritureComptableByRef("AC-2022/00001")).thenThrow(new NotFoundException());
+    manager.checkEcritureComptable(vEcritureComptable);
 
 }
 
@@ -263,4 +277,74 @@ manager.checkEcritureComptableContext(ecritureComptable);
         Mockito.when(comptabiliteDao.getEcritureComptableByRef("AC-2022/00002")).thenReturn(ecritureComptable);
         manager.checkEcritureComptableContext(ecritureComptable);
     }
+
+
+    @Test
+    public void insertEcritureComptable () throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable;
+        vEcritureComptable = new EcritureComptable();
+        //On remplie les éléments requis pour le test unitaire
+        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+        //new date = date du jour par défault
+        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setLibelle("Libelle");
+        vEcritureComptable.setReference("AC-2022/00001");
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(123),
+                null));
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
+                null, null,
+                new BigDecimal(123)));
+//On mock comme pour checkEcritureComptableContext
+        Mockito.when(comptabiliteDao.getEcritureComptableByRef("AC-2022/00001")).thenThrow(new NotFoundException());
+        // on impose de rien faire grace au doNothing()
+        Mockito.doNothing().when(comptabiliteDao).insertEcritureComptable(vEcritureComptable);
+        manager.insertEcritureComptable(vEcritureComptable);
+    }
+
+
+    @Test
+    public void updateEcritureComptable () throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable;
+        vEcritureComptable = new EcritureComptable();
+
+        // on impose de rien faire grace au doNothing()
+        Mockito.doNothing().when(comptabiliteDao).updateEcritureComptable(vEcritureComptable);
+        manager.updateEcritureComptable(vEcritureComptable);
+    }
+
+    @Test
+    public void deleteEcritureComptable () throws NotFoundException, FunctionalException {
+
+       Mockito.doNothing().when(comptabiliteDao).deleteEcritureComptable(1);
+        manager.deleteEcritureComptable(1);
+    }
+
+    @Test
+    public void getListCompteComptable() {
+        List<CompteComptable> compteComptable = new ArrayList<CompteComptable>();
+        compteComptable.add(new CompteComptable());
+    Mockito.when(comptabiliteDao.getListCompteComptable()).thenReturn(compteComptable);
+   //On teste que lorsque l'on appelle cet élément on a bien un élément
+    Assert.assertEquals(1,manager.getListCompteComptable().size());
+    }
+
+    @Test
+    public void getListJournalComptable() {
+        List<JournalComptable> journalComptable = new ArrayList<JournalComptable>();
+        journalComptable.add(new JournalComptable());
+        Mockito.when(comptabiliteDao.getListJournalComptable()).thenReturn(journalComptable);
+        //On teste que lorsque l'on appelle cet élément on a bien un élément
+        Assert.assertEquals(1,manager.getListJournalComptable().size());
+    }
+
+    @Test
+    public void getListEcritureComptable() {
+        List<EcritureComptable> ecritureComptable = new ArrayList<EcritureComptable>();
+        ecritureComptable.add(new EcritureComptable());
+        Mockito.when(comptabiliteDao.getListEcritureComptable()).thenReturn(ecritureComptable);
+        //On teste que lorsque l'on appelle cet élément on a bien un élément
+        Assert.assertEquals(1,manager.getListEcritureComptable().size());
+    }
+
 }
